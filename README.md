@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/actions/workflows/node.js.yml/badge.svg)](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/actions/workflows/node.js.yml)
 [![Greasy Fork installs](https://img.shields.io/greasyfork/dt/577753?label=installs)](https://greasyfork.org/en/scripts/577753-amazon-eu-vat-converter)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![Adjusted price with Finnish VAT rate on Amazon DE](./image.png)
 
@@ -134,4 +134,4 @@ Please open an [issue](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/
 
 ## License
 
-MIT
+[MIT](LICENSE)
