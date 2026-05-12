@@ -342,7 +342,21 @@
 		const offscreen = priceEl.querySelector(".a-offscreen");
 		if (!offscreen) return;
 
-		const sourcePrice = parsePrice(offscreen.textContent);
+		// Some price elements (e.g. discounted "priceToPay") ship with an empty
+		// .a-offscreen span.  Fall back to the visible digit spans in that case.
+		let priceText = offscreen.textContent.trim();
+		if (!priceText) {
+			const whole = priceEl.querySelector(".a-price-whole");
+			const fraction = priceEl.querySelector(".a-price-fraction");
+			if (whole && fraction) {
+				// .a-price-whole contains a nested .a-price-decimal span; use only
+				// the first text node so we get just the digits (e.g. "12").
+				const wholeDigits = whole.childNodes[0]?.textContent?.trim() ?? "";
+				priceText = `${wholeDigits}.${fraction.textContent.trim()}`;
+			}
+		}
+
+		const sourcePrice = parsePrice(priceText);
 		if (!sourcePrice || sourcePrice <= 0) return;
 
 		const country = getSelected();
@@ -492,7 +506,7 @@
 	// Export pure functions for unit testing in Node.js / Jest.
 	// The typeof guard is a no-op in browsers where `module` is undefined.
 	if (typeof module !== "undefined") {
-		module.exports = { parsePrice, formatPrice, convertPrice, detectCountry, loadCountry };
+		module.exports = { parsePrice, formatPrice, convertPrice, detectCountry, loadCountry, addBadge };
 		return; // skip DOM side-effects in test environment
 	}
 
