@@ -330,7 +330,7 @@
 		}
 
 		const sourcePrice = parsePrice(priceText);
-		if (!sourcePrice || sourcePrice <= 0) return;
+		if (sourcePrice == null || sourcePrice <= 0) return;
 
 		const country = getSelected();
 		const localPrice = convertPrice(sourcePrice);
