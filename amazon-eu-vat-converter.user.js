@@ -69,6 +69,18 @@
 
 	const SOURCE_VAT = SOURCE_VATS[location.hostname] ?? 19;
 
+	// Home country code for each storefront — used as the locale fallback.
+	const STOREFRONT_COUNTRIES = {
+		"www.amazon.de": "DE",
+		"www.amazon.fr": "FR",
+		"www.amazon.it": "IT",
+		"www.amazon.es": "ES",
+		"www.amazon.co.uk": "GB",
+		"www.amazon.nl": "NL",
+		"www.amazon.pl": "PL",
+		"www.amazon.se": "SE",
+	};
+
 	// Currency symbol used by each storefront.
 	const SOURCE_CURRENCIES = {
 		"www.amazon.de": "€",
@@ -89,11 +101,15 @@
 	// ─────────────────────────────────────────────────────────────────────────
 
 	function detectCountry() {
-		// Try to infer from browser locale (e.g. "fi-FI" → "FI", "en-GB" → "GB")
+		// Try to infer from browser locale (e.g. "fi-FI" → "FI", "en-GB" → "GB").
+		// A bare language tag like "en" or "de" won't have a region subtag and
+		// therefore won't match a country code, so we fall back to the home
+		// country of the storefront being visited rather than a hardcoded value.
 		const lang = navigator.language || "";
 		const parts = lang.split("-");
-		const code = (parts[1] || parts[0] || "").toUpperCase();
-		return COUNTRIES.find((c) => c.code === code) ? code : "FI";
+		const code = (parts[1] || "").toUpperCase();
+		if (COUNTRIES.find((c) => c.code === code)) return code;
+		return STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
 	}
 
 	function loadCountry() {
@@ -107,9 +123,10 @@
 	let selectedCode = loadCountry();
 
 	function getSelected() {
+		const fallbackCode = STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
 		return (
 			COUNTRIES.find((c) => c.code === selectedCode) ||
-			COUNTRIES.find((c) => c.code === "FI")
+			COUNTRIES.find((c) => c.code === fallbackCode)
 		);
 	}
 
