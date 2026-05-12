@@ -72,7 +72,7 @@
 
 	const _storefront = STOREFRONTS[location.hostname];
 	const SOURCE_VAT =
-		COUNTRIES.find((c) => c.code === _storefront?.countryCode)?.vat ?? 19;
+		COUNTRIES.find((c) => c.code === (_storefront?.countryCode ?? "DE")).vat;
 	const SOURCE_CURRENCY = _storefront?.currency ?? "€";
 
 	const STORAGE_KEY = "aev_country";
