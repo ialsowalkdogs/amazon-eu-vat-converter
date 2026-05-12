@@ -1,21 +1,20 @@
 const { loadScript } = require("./helpers");
 
-// ─── European format ───────────────────────────────────────────────────────
-// All storefronts except amazon.co.uk: dot = thousands separator,
-// comma = decimal separator.
+// All storefronts use US-style number format: comma = thousands separator,
+// dot = decimal separator.
 
-describe("parsePrice – European format (amazon.de)", () => {
+describe("parsePrice (amazon.de)", () => {
 	let parsePrice;
 	beforeEach(() => ({ parsePrice } = loadScript("www.amazon.de")));
 
 	test.each([
-		["€ 29,99",          29.99],
-		["29,99 €",          29.99],
-		["1.299,00 €",     1299.00],
-		["1.234.567,89 €", 1234567.89], // multiple thousands separators
-		["9,99",              9.99],    // no currency symbol
-		["29,99 zł",         29.99],    // PLN
-		["1 299,00 kr",    1299.00],    // SEK (space as thousands sep)
+		["€ 29.99",          29.99],
+		["29.99 €",          29.99],
+		["1,299.00 €",     1299.00],
+		["1,234,567.89 €", 1234567.89], // multiple thousands separators
+		["9.99",              9.99],    // no currency symbol
+		["29.99 zł",         29.99],    // PLN
+		["1,299.00 kr",    1299.00],    // SEK
 	])('"%s" → %s', (input, expected) => {
 		expect(parsePrice(input)).toBeCloseTo(expected, 5);
 	});
@@ -25,10 +24,7 @@ describe("parsePrice – European format (amazon.de)", () => {
 	});
 });
 
-// ─── British format ────────────────────────────────────────────────────────
-// amazon.co.uk: comma = thousands separator, dot = decimal separator.
-
-describe("parsePrice – British format (amazon.co.uk)", () => {
+describe("parsePrice (amazon.co.uk)", () => {
 	let parsePrice;
 	beforeEach(() => ({ parsePrice } = loadScript("www.amazon.co.uk")));
 

@@ -163,35 +163,25 @@
 	// 3. PRICE LOGIC
 	// ─────────────────────────────────────────────────────────────────────────
 
-	// amazon.co.uk uses British format: comma = thousands sep, dot = decimal.
-	// All other supported storefronts use European format: dot = thousands sep,
-	// comma = decimal.
+	// All storefronts use US-style number format: comma = thousands sep, dot = decimal.
+	// IS_UK is kept only to distinguish currency symbol placement (£ prefix vs suffix).
 	const IS_UK = location.hostname === "www.amazon.co.uk";
 
 	function parsePrice(text) {
 		// Strip all currency symbols and whitespace, leaving only digits and separators.
 		const stripped = text.replace(/[^\d.,]/g, "");
-		let normalised;
-		if (IS_UK) {
-			// "1,299.99" → remove comma thousands separators → "1299.99"
-			normalised = stripped.replace(/,(?=\d{3}(?:[,.]|$))/g, "");
-		} else {
-			// "1.299,99" → remove dot thousands separators → "1299,99" → "1299.99"
-			normalised = stripped
-				.replace(/\.(?=\d{3}(?:[,.]|$))/g, "") // remove thousands-sep dots
-				.replace(",", "."); // decimal comma → dot (only the first one)
-		}
+		// "1,299.99" → remove comma thousands separators → "1299.99"
+		const normalised = stripped.replace(/,(?=\d{3}(?:[,.]|$))/g, "");
 		const value = parseFloat(normalised);
 		return Number.isNaN(value) ? null : value;
 	}
 
 	function formatPrice(amount) {
-		if (IS_UK) {
-			// British format: dot decimal, currency symbol prefix
-			return `${SOURCE_CURRENCY}${amount.toFixed(2)}`;
-		}
-		// European format: comma decimal, currency symbol suffix
-		return `${amount.toFixed(2).replace(".", ",")} ${SOURCE_CURRENCY}`;
+		const fixed = amount.toFixed(2);
+		const [integer, decimal] = fixed.split(".");
+		const formatted = `${integer.replace(/\B(?=(\d{3})+$)/g, ",")}.${decimal}`;
+		// £ is a prefix; all other currency symbols are suffixes.
+		return IS_UK ? `${SOURCE_CURRENCY}${formatted}` : `${formatted} ${SOURCE_CURRENCY}`;
 	}
 
 	function convertPrice(sourcePrice) {
@@ -458,7 +448,7 @@
 			search.value = "";
 			buildList("");
 			// requestAnimationFrame waits for the panel to be painted before
-			// focusing, avoiding the arbitrary 50 ms magic number.
+			// focusing
 			requestAnimationFrame(() => search.focus());
 		}
 

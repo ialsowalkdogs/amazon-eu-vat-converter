@@ -53,7 +53,7 @@ describe("addBadge – discounted price with empty .a-offscreen", () => {
 
 		addBadge(priceEl);
 
-		expect(priceEl.nextElementSibling.textContent).toContain("12,65");
+		expect(priceEl.nextElementSibling.textContent).toContain("12.65");
 	});
 
 	test("marks the element so a second call does not insert a duplicate badge", () => {
@@ -88,7 +88,7 @@ describe("addBadge – regular (non-discounted) price", () => {
 
 	test("inserts a badge when .a-offscreen contains the price", () => {
 		// Normal non-discounted price: .a-offscreen is populated.
-		const priceEl = makeRegularPriceEl("€29,99");
+		const priceEl = makeRegularPriceEl("€29.99");
 		document.body.appendChild(priceEl);
 
 		addBadge(priceEl);
@@ -96,6 +96,6 @@ describe("addBadge – regular (non-discounted) price", () => {
 		const badge = priceEl.nextElementSibling;
 		expect(badge).not.toBeNull();
 		expect(badge.classList.contains("aev-badge")).toBe(true);
-		expect(badge.textContent).toContain("29,99");
+		expect(badge.textContent).toContain("29.99");
 	});
 });
