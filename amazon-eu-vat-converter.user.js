@@ -379,7 +379,9 @@
 			open = true;
 			search.value = "";
 			buildList("");
-			setTimeout(() => search.focus(), 50);
+			// requestAnimationFrame waits for the panel to be painted before
+			// focusing, avoiding the arbitrary 50 ms magic number.
+			requestAnimationFrame(() => search.focus());
 		}
 
 		function closePanel() {
