@@ -172,10 +172,111 @@
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// 4. DOM MANIPULATION
+	// 4. STYLES
 	// ─────────────────────────────────────────────────────────────────────────
 
 	const BADGE_CLASS = "aev-badge";
+
+	function injectStyles() {
+		const style = document.createElement("style");
+		style.textContent = `
+			.aev-badge {
+				display: inline-block;
+				font-size: 11px;
+				line-height: 16px;
+				background: #1a1a2e;
+				color: #e0e0e0;
+				padding: 2px 7px;
+				border-radius: 3px;
+				margin-left: 6px;
+				vertical-align: middle;
+				font-family: Arial, sans-serif;
+				white-space: nowrap;
+				cursor: default;
+				box-shadow: 0 1px 3px rgba(0,0,0,.3);
+			}
+			#aev-widget {
+				position: fixed;
+				bottom: 20px;
+				right: 20px;
+				z-index: 999999;
+				font-family: Arial, sans-serif;
+				font-size: 13px;
+				user-select: none;
+			}
+			#aev-pill {
+				display: flex;
+				align-items: center;
+				gap: 5px;
+				background: #1a1a2e;
+				color: #e0e0e0;
+				border: 1px solid #444;
+				border-radius: 20px;
+				padding: 5px 12px;
+				cursor: pointer;
+				font-size: 13px;
+				box-shadow: 0 2px 6px rgba(0,0,0,.4);
+				white-space: nowrap;
+			}
+			.aev-pill__chevron { opacity: .6; font-size: 11px; }
+			#aev-panel {
+				/* display toggled between none/flex by JS */
+				display: none;
+				position: absolute;
+				bottom: calc(100% + 8px);
+				right: 0;
+				background: #1a1a2e;
+				border: 1px solid #444;
+				border-radius: 8px;
+				padding: 8px;
+				box-shadow: 0 4px 16px rgba(0,0,0,.5);
+				min-width: 220px;
+				max-height: 340px;
+				overflow: hidden;
+				flex-direction: column;
+				gap: 4px;
+			}
+			#aev-search {
+				background: #0d0d1a;
+				border: 1px solid #555;
+				border-radius: 4px;
+				color: #e0e0e0;
+				padding: 4px 8px;
+				font-size: 12px;
+				outline: none;
+				margin-bottom: 4px;
+			}
+			#aev-list {
+				overflow-y: auto;
+				max-height: 260px;
+				display: flex;
+				flex-direction: column;
+				gap: 1px;
+			}
+			.aev-row {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: transparent;
+				color: #e0e0e0;
+				border: none;
+				border-radius: 4px;
+				padding: 5px 8px;
+				cursor: pointer;
+				font-size: 12px;
+				text-align: left;
+				width: 100%;
+			}
+			.aev-row--selected { background: #2e2e4e; }
+			.aev-row__name { flex: 1; }
+			.aev-row__vat { opacity: .6; }
+		`;
+		document.head.appendChild(style);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// 5. DOM MANIPULATION
+	// ─────────────────────────────────────────────────────────────────────────
 
 	function removeAllBadges() {
 		document.querySelectorAll(`.${BADGE_CLASS}`).forEach((b) => {
@@ -206,21 +307,6 @@
 			`Net (ex-VAT): ${formatPrice(net)}`,
 			`Your price (${country.name}, ${country.vat}% VAT): ${formatPrice(localPrice)}`,
 		].join("\n");
-		badge.style.cssText = [
-			"display:inline-block",
-			"font-size:11px",
-			"line-height:16px",
-			"background:#1a1a2e",
-			"color:#e0e0e0",
-			"padding:2px 7px",
-			"border-radius:3px",
-			"margin-left:6px",
-			"vertical-align:middle",
-			"font-family:Arial,sans-serif",
-			"white-space:nowrap",
-			"cursor:default",
-			"box-shadow:0 1px 3px rgba(0,0,0,.3)",
-		].join(";");
 		badge.textContent = `${country.flag} ${formatPrice(localPrice)}`;
 
 		priceEl.insertAdjacentElement("afterend", badge);
@@ -239,91 +325,37 @@
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// 5. SETTINGS WIDGET
+	// 6. SETTINGS WIDGET
 	// ─────────────────────────────────────────────────────────────────────────
 
 	function buildWidget() {
 		// --- Outer container (fixed to bottom-right) ---
 		const widget = document.createElement("div");
 		widget.id = "aev-widget";
-		widget.style.cssText = [
-			"position:fixed",
-			"bottom:20px",
-			"right:20px",
-			"z-index:999999",
-			"font-family:Arial,sans-serif",
-			"font-size:13px",
-			"user-select:none",
-		].join(";");
 
 		// --- Pill button ---
 		const pill = document.createElement("button");
 		pill.id = "aev-pill";
-		pill.style.cssText = [
-			"display:flex",
-			"align-items:center",
-			"gap:5px",
-			"background:#1a1a2e",
-			"color:#e0e0e0",
-			"border:1px solid #444",
-			"border-radius:20px",
-			"padding:5px 12px",
-			"cursor:pointer",
-			"font-size:13px",
-			"box-shadow:0 2px 6px rgba(0,0,0,.4)",
-			"white-space:nowrap",
-		].join(";");
 
 		function refreshPill() {
 			const c = getSelected();
-			pill.innerHTML = `${c.flag} <strong>${c.code}</strong> ${c.vat}% <span style="opacity:.6;font-size:11px">▲</span>`;
+			pill.innerHTML = `${c.flag} <strong>${c.code}</strong> ${c.vat}% <span class="aev-pill__chevron">▲</span>`;
 		}
 		refreshPill();
 
 		// --- Dropdown panel ---
 		const panel = document.createElement("div");
 		panel.id = "aev-panel";
-		panel.style.cssText = [
-			"display:none",
-			"position:absolute",
-			"bottom:calc(100% + 8px)",
-			"right:0",
-			"background:#1a1a2e",
-			"border:1px solid #444",
-			"border-radius:8px",
-			"padding:8px",
-			"box-shadow:0 4px 16px rgba(0,0,0,.5)",
-			"min-width:220px",
-			"max-height:340px",
-			"overflow:hidden",
-			"flex-direction:column",
-			"gap:4px",
-		].join(";");
 
 		// Search box
 		const search = document.createElement("input");
+		search.id = "aev-search";
 		search.type = "text";
 		search.placeholder = "Search country…";
-		search.style.cssText = [
-			"background:#0d0d1a",
-			"border:1px solid #555",
-			"border-radius:4px",
-			"color:#e0e0e0",
-			"padding:4px 8px",
-			"font-size:12px",
-			"outline:none",
-			"margin-bottom:4px",
-		].join(";");
 
 		// Country list
 		const list = document.createElement("div");
-		list.style.cssText = [
-			"overflow-y:auto",
-			"max-height:260px",
-			"display:flex",
-			"flex-direction:column",
-			"gap:1px",
-		].join(";");
+		list.id = "aev-list";
 
 		function buildList(filter) {
 			list.innerHTML = "";
@@ -337,21 +369,9 @@
 
 			filtered.forEach((c) => {
 				const row = document.createElement("button");
-				row.style.cssText = [
-					"display:flex",
-					"align-items:center",
-					"gap:8px",
-					`background:${c.code === selectedCode ? "#2e2e4e" : "transparent"}`,
-					"color:#e0e0e0",
-					"border:none",
-					"border-radius:4px",
-					"padding:5px 8px",
-					"cursor:pointer",
-					"font-size:12px",
-					"text-align:left",
-					"width:100%",
-				].join(";");
-				row.innerHTML = `${c.flag} <span style="flex:1">${c.name}</span> <span style="opacity:.6">${c.vat}%</span>`;
+				row.className =
+					"aev-row" + (c.code === selectedCode ? " aev-row--selected" : "");
+				row.innerHTML = `${c.flag} <span class="aev-row__name">${c.name}</span> <span class="aev-row__vat">${c.vat}%</span>`;
 				row.addEventListener("click", () => {
 					selectedCode = c.code;
 					saveCountry(c.code);
@@ -404,9 +424,10 @@
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// 6. INIT
+	// 7. INIT
 	// ─────────────────────────────────────────────────────────────────────────
 
+	injectStyles();
 	processPage();
 	buildWidget();
 
