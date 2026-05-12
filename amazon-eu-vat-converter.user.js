@@ -3,7 +3,7 @@
 // @namespace    https://github.com/ialsowalkdogs/amazon-eu-vat-converter
 // @version      1.0.0
 // @description  See prices with your local VAT applied on any Amazon EU storefront
-// @author       Olga Vorozheykina
+// @author       ialsowalkdogs
 // @match        https://www.amazon.de/*
 // @match        https://www.amazon.fr/*
 // @match        https://www.amazon.it/*
@@ -56,82 +56,62 @@
 		{ code: "SK", name: "Slovakia", flag: "🇸🇰", vat: 20 },
 	];
 
-	// VAT rate already baked into prices on each Amazon storefront.
-	const SOURCE_VATS = {
-		"www.amazon.de": 19,
-		"www.amazon.fr": 20,
-		"www.amazon.it": 22,
-		"www.amazon.es": 21,
-		"www.amazon.co.uk": 20,
-		"www.amazon.nl": 21,
-		"www.amazon.pl": 23,
-		"www.amazon.se": 25,
+	// Per-storefront metadata: home country code and currency symbol.
+	// The VAT rate baked into storefront prices is derived from COUNTRIES above
+	// via countryCode, so there is no need to maintain a separate numeric list.
+	const STOREFRONTS = {
+		"www.amazon.de": { countryCode: "DE", currency: "€" },
+		"www.amazon.fr": { countryCode: "FR", currency: "€" },
+		"www.amazon.it": { countryCode: "IT", currency: "€" },
+		"www.amazon.es": { countryCode: "ES", currency: "€" },
+		"www.amazon.co.uk": { countryCode: "GB", currency: "£" },
+		"www.amazon.nl": { countryCode: "NL", currency: "€" },
+		"www.amazon.pl": { countryCode: "PL", currency: "zł" },
+		"www.amazon.se": { countryCode: "SE", currency: "kr" },
 	};
 
-	const SOURCE_VAT = SOURCE_VATS[location.hostname] ?? 19;
-
-	// Home country code for each storefront — used as the locale fallback.
-	const STOREFRONT_COUNTRIES = {
-		"www.amazon.de": "DE",
-		"www.amazon.fr": "FR",
-		"www.amazon.it": "IT",
-		"www.amazon.es": "ES",
-		"www.amazon.co.uk": "GB",
-		"www.amazon.nl": "NL",
-		"www.amazon.pl": "PL",
-		"www.amazon.se": "SE",
-	};
-
-	// Currency symbol used by each storefront.
-	const SOURCE_CURRENCIES = {
-		"www.amazon.de": "€",
-		"www.amazon.fr": "€",
-		"www.amazon.it": "€",
-		"www.amazon.es": "€",
-		"www.amazon.co.uk": "£",
-		"www.amazon.nl": "€",
-		"www.amazon.pl": "zł",
-		"www.amazon.se": "kr",
-	};
-	const SOURCE_CURRENCY = SOURCE_CURRENCIES[location.hostname] ?? "€";
+	const _storefront = STOREFRONTS[location.hostname];
+	const SOURCE_VAT =
+		COUNTRIES.find((c) => c.code === _storefront?.countryCode)?.vat ?? 19;
+	const SOURCE_CURRENCY = _storefront?.currency ?? "€";
 
 	const STORAGE_KEY = "aev_country";
 
 	// IANA timezone → country code for every country in COUNTRIES.
 	// Used as a locale-independent fallback in detectCountry().
 	const TIMEZONE_COUNTRIES = {
-		"Europe/Vienna":     "AT",
-		"Europe/Brussels":   "BE",
-		"Europe/Sofia":      "BG",
-		"Europe/Zurich":     "CH",
-		"Asia/Nicosia":      "CY",
-		"Europe/Nicosia":    "CY",
-		"Europe/Prague":     "CZ",
-		"Europe/Berlin":     "DE",
+		"Europe/Vienna": "AT",
+		"Europe/Brussels": "BE",
+		"Europe/Sofia": "BG",
+		"Europe/Zurich": "CH",
+		"Asia/Nicosia": "CY",
+		"Europe/Nicosia": "CY",
+		"Europe/Prague": "CZ",
+		"Europe/Berlin": "DE",
 		"Europe/Copenhagen": "DK",
-		"Europe/Tallinn":    "EE",
-		"Europe/Athens":     "GR",
-		"Europe/Madrid":     "ES",
-		"Europe/Helsinki":   "FI",
-		"Europe/Paris":      "FR",
-		"Europe/London":     "GB",
-		"Europe/Zagreb":     "HR",
-		"Europe/Budapest":   "HU",
-		"Europe/Dublin":     "IE",
-		"Atlantic/Reykjavik":"IS",
-		"Europe/Rome":       "IT",
-		"Europe/Vilnius":    "LT",
+		"Europe/Tallinn": "EE",
+		"Europe/Athens": "GR",
+		"Europe/Madrid": "ES",
+		"Europe/Helsinki": "FI",
+		"Europe/Paris": "FR",
+		"Europe/London": "GB",
+		"Europe/Zagreb": "HR",
+		"Europe/Budapest": "HU",
+		"Europe/Dublin": "IE",
+		"Atlantic/Reykjavik": "IS",
+		"Europe/Rome": "IT",
+		"Europe/Vilnius": "LT",
 		"Europe/Luxembourg": "LU",
-		"Europe/Riga":       "LV",
-		"Europe/Malta":      "MT",
-		"Europe/Amsterdam":  "NL",
-		"Europe/Oslo":       "NO",
-		"Europe/Warsaw":     "PL",
-		"Europe/Lisbon":     "PT",
-		"Atlantic/Azores":   "PT",
-		"Europe/Bucharest":  "RO",
-		"Europe/Stockholm":  "SE",
-		"Europe/Ljubljana":  "SI",
+		"Europe/Riga": "LV",
+		"Europe/Malta": "MT",
+		"Europe/Amsterdam": "NL",
+		"Europe/Oslo": "NO",
+		"Europe/Warsaw": "PL",
+		"Europe/Lisbon": "PT",
+		"Atlantic/Azores": "PT",
+		"Europe/Bucharest": "RO",
+		"Europe/Stockholm": "SE",
+		"Europe/Ljubljana": "SI",
 		"Europe/Bratislava": "SK",
 	};
 
@@ -157,7 +137,7 @@
 		const tzCode = TIMEZONE_COUNTRIES[tz];
 		if (tzCode) return tzCode;
 		// 3. Last resort: home country of the visited storefront.
-		return STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
+		return STOREFRONTS[location.hostname]?.countryCode ?? "DE";
 	}
 
 	function loadCountry() {
@@ -171,7 +151,7 @@
 	let selectedCode = loadCountry();
 
 	function getSelected() {
-		const fallbackCode = STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
+		const fallbackCode = STOREFRONTS[location.hostname]?.countryCode ?? "DE";
 		return (
 			COUNTRIES.find((c) => c.code === selectedCode) ||
 			COUNTRIES.find((c) => c.code === fallbackCode) ||
@@ -402,7 +382,10 @@
 		pill.setAttribute("aria-haspopup", "listbox");
 		pill.setAttribute("aria-expanded", "false");
 		pill.setAttribute("aria-controls", "aev-panel");
-		pill.setAttribute("aria-label", "VAT converter: select destination country");
+		pill.setAttribute(
+			"aria-label",
+			"VAT converter: select destination country",
+		);
 
 		function refreshPill() {
 			const c = getSelected();
@@ -506,7 +489,14 @@
 	// Export pure functions for unit testing in Node.js / Jest.
 	// The typeof guard is a no-op in browsers where `module` is undefined.
 	if (typeof module !== "undefined") {
-		module.exports = { parsePrice, formatPrice, convertPrice, detectCountry, loadCountry, addBadge };
+		module.exports = {
+			parsePrice,
+			formatPrice,
+			convertPrice,
+			detectCountry,
+			loadCountry,
+			addBadge,
+		};
 		return; // skip DOM side-effects in test environment
 	}
 
