@@ -1,10 +1,16 @@
 # Amazon EU VAT Converter
 
+[![CI](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/actions/workflows/node.js.yml/badge.svg)](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/actions/workflows/node.js.yml)
+[![Greasy Fork installs](https://img.shields.io/greasyfork/dt/577753?label=installs)](https://greasyfork.org/en/scripts/577753-amazon-eu-vat-converter)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+![Adjusted price with Finnish VAT rate on Amazon DE](./image.png)
+
 A Tampermonkey userscript that shows you the **estimated price with your local VAT** alongside every price on Amazon EU storefronts.
 
 Useful if you're shopping on a foreign Amazon (e.g. amazon.de) from a country with a different VAT rate — the displayed price already includes the source country's VAT, so the amount you actually get charged can differ.
 
-> **Install on [Greasy Fork](https://greasyfork.org/ru/scripts/577753-amazon-eu-vat-converter)** · [Report an issue](../../issues)
+> **Install on [Greasy Fork](https://greasyfork.org/en/scripts/577753-amazon-eu-vat-converter)** · [Report an issue](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/issues)
 
 ---
 
@@ -122,7 +128,7 @@ Pull requests are welcome. If you want to:
 - **Add a new storefront** — add a `@match` line and an entry in the `SOURCE_VATS` map
 - **Add reduced rate support** — this is the most valuable open problem; a mapping of Amazon product categories to VAT categories per country would be needed
 
-Please open an issue first for larger changes so we can discuss the approach.
+Please open an [issue](https://github.com/ialsowalkdogs/amazon-eu-vat-converter/issues) first for larger changes so we can discuss the approach.
 
 ---
 
