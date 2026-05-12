@@ -391,7 +391,13 @@
 	processPage();
 	buildWidget();
 
-	// Watch for dynamically injected prices (infinite scroll, carousels, etc.)
-	const observer = new MutationObserver(() => processPage());
+	// Watch for dynamically injected prices (infinite scroll, carousels, etc.).
+	// Debounced so that bursts of DOM mutations (e.g. lazy-loaded images, ads)
+	// only trigger a single processPage() call ~200 ms after activity settles.
+	let mutationTimer;
+	const observer = new MutationObserver(() => {
+		clearTimeout(mutationTimer);
+		mutationTimer = setTimeout(processPage, 200);
+	});
 	observer.observe(document.body, { childList: true, subtree: true });
 })();
