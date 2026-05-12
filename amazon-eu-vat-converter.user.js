@@ -103,13 +103,25 @@
 	// 3. PRICE LOGIC
 	// ─────────────────────────────────────────────────────────────────────────
 
-	function parseEuroPrice(text) {
-		// Handles: "€ 29,99", "1.299,00 €", "£19.99", etc.
-		const cleaned = text
-			.replace(/[€£$\s]/g, "")
-			.replace(/\.(?=\d{3})/g, "") // remove thousands separator dots
-			.replace(",", "."); // decimal comma → dot
-		const value = parseFloat(cleaned);
+	// amazon.co.uk uses British format: comma = thousands sep, dot = decimal.
+	// All other supported storefronts use European format: dot = thousands sep,
+	// comma = decimal.
+	const IS_UK = location.hostname === "www.amazon.co.uk";
+
+	function parsePrice(text) {
+		// Strip all currency symbols and whitespace, leaving only digits and separators.
+		const stripped = text.replace(/[^\d.,]/g, "");
+		let normalised;
+		if (IS_UK) {
+			// "1,299.99" → remove comma thousands separators → "1299.99"
+			normalised = stripped.replace(/,(?=\d{3}(?:[,.]|$))/g, "");
+		} else {
+			// "1.299,99" → remove dot thousands separators → "1299,99" → "1299.99"
+			normalised = stripped
+				.replace(/\.(?=\d{3}(?:[,.]|$))/g, "") // remove thousands-sep dots
+				.replace(",", "."); // decimal comma → dot (only the first one)
+		}
+		const value = parseFloat(normalised);
 		return Number.isNaN(value) ? null : value;
 	}
 
@@ -145,7 +157,7 @@
 		const offscreen = priceEl.querySelector(".a-offscreen");
 		if (!offscreen) return;
 
-		const sourcePrice = parseEuroPrice(offscreen.textContent);
+		const sourcePrice = parsePrice(offscreen.textContent);
 		if (!sourcePrice || sourcePrice <= 0) return;
 
 		const country = getSelected();
