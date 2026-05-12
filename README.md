@@ -47,7 +47,7 @@ This matches the amount shown on the actual Amazon invoice.
 ## Installation
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/) for Chrome, Firefox, Edge or Safari.
-2. Click **[Install from Greasy Fork](https://greasyfork.org/ru/scripts/577753-amazon-eu-vat-converter)** — or install manually:
+2. Click **[Install from Greasy Fork](https://greasyfork.org/en/scripts/577753-amazon-eu-vat-converter)** — or install manually:
    - Open Tampermonkey → *Create a new script*
    - Delete the placeholder, paste in the contents of [`amazon-eu-vat-converter.user.js`](amazon-eu-vat-converter.user.js)
    - Press **Ctrl+S** to save
