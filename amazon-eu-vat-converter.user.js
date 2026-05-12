@@ -97,20 +97,66 @@
 
 	const STORAGE_KEY = "aev_country";
 
+	// IANA timezone → country code for every country in COUNTRIES.
+	// Used as a locale-independent fallback in detectCountry().
+	const TIMEZONE_COUNTRIES = {
+		"Europe/Vienna":     "AT",
+		"Europe/Brussels":   "BE",
+		"Europe/Sofia":      "BG",
+		"Europe/Zurich":     "CH",
+		"Asia/Nicosia":      "CY",
+		"Europe/Nicosia":    "CY",
+		"Europe/Prague":     "CZ",
+		"Europe/Berlin":     "DE",
+		"Europe/Copenhagen": "DK",
+		"Europe/Tallinn":    "EE",
+		"Europe/Athens":     "GR",
+		"Europe/Madrid":     "ES",
+		"Europe/Helsinki":   "FI",
+		"Europe/Paris":      "FR",
+		"Europe/London":     "GB",
+		"Europe/Zagreb":     "HR",
+		"Europe/Budapest":   "HU",
+		"Europe/Dublin":     "IE",
+		"Atlantic/Reykjavik":"IS",
+		"Europe/Rome":       "IT",
+		"Europe/Vilnius":    "LT",
+		"Europe/Luxembourg": "LU",
+		"Europe/Riga":       "LV",
+		"Europe/Malta":      "MT",
+		"Europe/Amsterdam":  "NL",
+		"Europe/Oslo":       "NO",
+		"Europe/Warsaw":     "PL",
+		"Europe/Lisbon":     "PT",
+		"Atlantic/Azores":   "PT",
+		"Europe/Bucharest":  "RO",
+		"Europe/Stockholm":  "SE",
+		"Europe/Ljubljana":  "SI",
+		"Europe/Bratislava": "SK",
+	};
+
 	// ─────────────────────────────────────────────────────────────────────────
 	// 2. STATE
 	// ─────────────────────────────────────────────────────────────────────────
 
 	function detectCountry() {
-		// Prefer the explicit region subtag when present ("fi-FI" → "FI",
-		// "en-GB" → "GB"). For bare language tags ("fi", "fr", "de") the
-		// language code itself is often identical to the country code and is a
-		// reasonable signal, so we try that too before falling back to the
-		// storefront's home country.
-		const lang = navigator.language || "";
-		const parts = lang.split("-");
-		const code = (parts[1] || parts[0] || "").toUpperCase();
-		if (COUNTRIES.find((c) => c.code === code)) return code;
+		// 1. Check every browser language preference, not just the primary one.
+		//    A user with "en" as UI language may still list "fi" or "fi-FI" as a
+		//    secondary preference (Settings → Languages).
+		const langs = navigator.languages?.length
+			? navigator.languages
+			: [navigator.language || ""];
+		for (const lang of langs) {
+			const parts = lang.split("-");
+			const code = (parts[1] || parts[0] || "").toUpperCase();
+			if (COUNTRIES.find((c) => c.code === code)) return code;
+		}
+		// 2. Fall back to the system timezone — reliable even when the browser
+		//    UI language gives no country signal (e.g. plain "en").
+		const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const tzCode = TIMEZONE_COUNTRIES[tz];
+		if (tzCode) return tzCode;
+		// 3. Last resort: home country of the visited storefront.
 		return STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
 	}
 
