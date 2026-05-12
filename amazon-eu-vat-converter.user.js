@@ -4,6 +4,11 @@
 // @version      1.0.0
 // @description  See prices with your local VAT applied on any Amazon EU storefront
 // @author       ialsowalkdogs
+// @license      MIT
+// @homepageURL  https://github.com/ialsowalkdogs/amazon-eu-vat-converter
+// @supportURL   https://github.com/ialsowalkdogs/amazon-eu-vat-converter/issues
+// @updateURL    https://raw.githubusercontent.com/ialsowalkdogs/amazon-eu-vat-converter/master/amazon-eu-vat-converter.user.js
+// @downloadURL  https://raw.githubusercontent.com/ialsowalkdogs/amazon-eu-vat-converter/master/amazon-eu-vat-converter.user.js
 // @match        https://www.amazon.de/*
 // @match        https://www.amazon.fr/*
 // @match        https://www.amazon.it/*
