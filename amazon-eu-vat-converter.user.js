@@ -68,6 +68,20 @@
 	};
 
 	const SOURCE_VAT = SOURCE_VATS[location.hostname] ?? 19;
+
+	// Currency symbol used by each storefront.
+	const SOURCE_CURRENCIES = {
+		"www.amazon.de": "€",
+		"www.amazon.fr": "€",
+		"www.amazon.it": "€",
+		"www.amazon.es": "€",
+		"www.amazon.co.uk": "£",
+		"www.amazon.nl": "€",
+		"www.amazon.pl": "zł",
+		"www.amazon.se": "kr",
+	};
+	const SOURCE_CURRENCY = SOURCE_CURRENCIES[location.hostname] ?? "€";
+
 	const STORAGE_KEY = "aev_country";
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -126,8 +140,12 @@
 	}
 
 	function formatPrice(amount) {
-		// European format with comma decimal
-		return `${amount.toFixed(2).replace(".", ",")} €`;
+		if (IS_UK) {
+			// British format: dot decimal, currency symbol prefix
+			return `${SOURCE_CURRENCY}${amount.toFixed(2)}`;
+		}
+		// European format: comma decimal, currency symbol suffix
+		return `${amount.toFixed(2).replace(".", ",")} ${SOURCE_CURRENCY}`;
 	}
 
 	function convertPrice(sourcePrice) {
