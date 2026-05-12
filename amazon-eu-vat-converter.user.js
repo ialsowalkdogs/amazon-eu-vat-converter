@@ -336,6 +336,10 @@
 		// --- Pill button ---
 		const pill = document.createElement("button");
 		pill.id = "aev-pill";
+		pill.setAttribute("aria-haspopup", "listbox");
+		pill.setAttribute("aria-expanded", "false");
+		pill.setAttribute("aria-controls", "aev-panel");
+		pill.setAttribute("aria-label", "VAT converter: select destination country");
 
 		function refreshPill() {
 			const c = getSelected();
@@ -346,12 +350,17 @@
 		// --- Dropdown panel ---
 		const panel = document.createElement("div");
 		panel.id = "aev-panel";
+		panel.setAttribute("role", "listbox");
+		panel.setAttribute("aria-label", "Destination country");
 
 		// Search box
 		const search = document.createElement("input");
 		search.id = "aev-search";
 		search.type = "text";
 		search.placeholder = "Search country…";
+		search.setAttribute("aria-label", "Search countries");
+		search.setAttribute("aria-controls", "aev-list");
+		search.setAttribute("autocomplete", "off");
 
 		// Country list
 		const list = document.createElement("div");
@@ -371,6 +380,8 @@
 				const row = document.createElement("button");
 				row.className =
 					"aev-row" + (c.code === selectedCode ? " aev-row--selected" : "");
+				row.setAttribute("role", "option");
+				row.setAttribute("aria-selected", String(c.code === selectedCode));
 				row.innerHTML = `${c.flag} <span class="aev-row__name">${c.name}</span> <span class="aev-row__vat">${c.vat}%</span>`;
 				row.addEventListener("click", () => {
 					selectedCode = c.code;
@@ -396,6 +407,7 @@
 
 		function openPanel() {
 			panel.style.display = "flex";
+			pill.setAttribute("aria-expanded", "true");
 			open = true;
 			search.value = "";
 			buildList("");
@@ -406,6 +418,7 @@
 
 		function closePanel() {
 			panel.style.display = "none";
+			pill.setAttribute("aria-expanded", "false");
 			open = false;
 		}
 
