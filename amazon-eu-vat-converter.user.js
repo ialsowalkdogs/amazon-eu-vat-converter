@@ -489,6 +489,13 @@
 	// 7. INIT
 	// ─────────────────────────────────────────────────────────────────────────
 
+	// Export pure functions for unit testing in Node.js / Jest.
+	// The typeof guard is a no-op in browsers where `module` is undefined.
+	if (typeof module !== "undefined") {
+		module.exports = { parsePrice, formatPrice, convertPrice, detectCountry, loadCountry };
+		return; // skip DOM side-effects in test environment
+	}
+
 	injectStyles();
 	processPage();
 	buildWidget();
