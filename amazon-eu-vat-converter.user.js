@@ -29,6 +29,7 @@
 		{ code: "CH", name: "Switzerland", flag: "🇨🇭", vat: 8.1 },
 		{ code: "CY", name: "Cyprus", flag: "🇨🇾", vat: 19 },
 		{ code: "CZ", name: "Czechia", flag: "🇨🇿", vat: 21 },
+		{ code: "DE", name: "Germany", flag: "🇩🇪", vat: 19 },
 		{ code: "DK", name: "Denmark", flag: "🇩🇰", vat: 25 },
 		{ code: "EE", name: "Estonia", flag: "🇪🇪", vat: 22 },
 		{ code: "GR", name: "Greece", flag: "🇬🇷", vat: 24 },
@@ -126,7 +127,8 @@
 		const fallbackCode = STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
 		return (
 			COUNTRIES.find((c) => c.code === selectedCode) ||
-			COUNTRIES.find((c) => c.code === fallbackCode)
+			COUNTRIES.find((c) => c.code === fallbackCode) ||
+			COUNTRIES[0] // last-resort: list is never empty
 		);
 	}
 
