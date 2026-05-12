@@ -102,13 +102,14 @@
 	// ─────────────────────────────────────────────────────────────────────────
 
 	function detectCountry() {
-		// Try to infer from browser locale (e.g. "fi-FI" → "FI", "en-GB" → "GB").
-		// A bare language tag like "en" or "de" won't have a region subtag and
-		// therefore won't match a country code, so we fall back to the home
-		// country of the storefront being visited rather than a hardcoded value.
+		// Prefer the explicit region subtag when present ("fi-FI" → "FI",
+		// "en-GB" → "GB"). For bare language tags ("fi", "fr", "de") the
+		// language code itself is often identical to the country code and is a
+		// reasonable signal, so we try that too before falling back to the
+		// storefront's home country.
 		const lang = navigator.language || "";
 		const parts = lang.split("-");
-		const code = (parts[1] || "").toUpperCase();
+		const code = (parts[1] || parts[0] || "").toUpperCase();
 		if (COUNTRIES.find((c) => c.code === code)) return code;
 		return STOREFRONT_COUNTRIES[location.hostname] ?? "DE";
 	}
