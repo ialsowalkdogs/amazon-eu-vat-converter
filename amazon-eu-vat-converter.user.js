@@ -184,10 +184,13 @@
 		return IS_UK ? `${SOURCE_CURRENCY}${formatted}` : `${formatted} ${SOURCE_CURRENCY}`;
 	}
 
+	function netPrice(sourcePrice) {
+		return sourcePrice / (1 + SOURCE_VAT / 100);
+	}
+
 	function convertPrice(sourcePrice) {
 		const country = getSelected();
-		const net = sourcePrice / (1 + SOURCE_VAT / 100);
-		return net * (1 + country.vat / 100);
+		return netPrice(sourcePrice) * (1 + country.vat / 100);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -331,7 +334,7 @@
 
 		const country = getSelected();
 		const localPrice = convertPrice(sourcePrice);
-		const net = sourcePrice / (1 + SOURCE_VAT / 100);
+		const net = netPrice(sourcePrice);
 
 		const badge = document.createElement("span");
 		badge.className = BADGE_CLASS;
